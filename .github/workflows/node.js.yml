@@ -47,7 +47,7 @@ jobs:
       uses: chrnorm/deployment-action@releases/v1
       id: deployment
       with:
-        token: "${{ github.token }}"
+        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}"
         target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
         environment: production
 
@@ -66,7 +66,7 @@ jobs:
       if: success()
       uses: chrnorm/deployment-status@releases/v1
       with:
-        token: "${{ github.token }}"
+        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN}}"
         target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
         state: "success"
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
@@ -75,7 +75,7 @@ jobs:
       if: failure()
       uses: chrnorm/deployment-status@releases/v1
       with:
-        token: "${{ github.token }}"
+        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}"
         target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
         state: "failure"
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
