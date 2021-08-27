@@ -71,12 +71,12 @@ jobs:
         state: "success"
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
 
-      - name: Update deployment status (failure)
-        if: failure()
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: "${{ github.token }}"
-          target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
-          state: "failure"
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+    - name: Update deployment status (failure)
+      if: failure()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: "${{ github.token }}"
+        target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
+        state: "failure"
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
       
