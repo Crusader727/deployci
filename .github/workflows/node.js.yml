@@ -43,6 +43,14 @@ jobs:
       run: npm run build
       id: build 
 
+    - uses: chrnorm/deployment-action@releases/v1
+      name: Create GitHub deployment
+      id: deployment
+      with:
+        token: "${{ github.token }}"
+        target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
+        environment: production
+
     - name: Deploy
       uses: appleboy/scp-action@master
       with:
@@ -53,4 +61,22 @@ jobs:
         port: 22
         source: "build/*"
         target: "/var/www/html/${{ steps.extract_branch.outputs.branch }}"
+
+    - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
+          state: "success"
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
+          state: "failure"
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
       
