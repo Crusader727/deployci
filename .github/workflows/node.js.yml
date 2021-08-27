@@ -19,6 +19,14 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: start deployment
+      uses: bobheadxi/deployments@v0.4.3
+      id: deployment
+      with:
+        step: start
+        token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        env: release
+
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -37,6 +45,7 @@ jobs:
 
     - name: Deploy
       uses: appleboy/scp-action@master
+      id: deploy
       with:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
@@ -45,3 +54,12 @@ jobs:
         port: 22
         source: "build/*"
         target: "/var/www/html/${{ steps.branch-name.outputs.current_branch }}"
+
+    - name: update deployment status
+      uses: bobheadxi/deployments@v0.4.3
+      if: always()
+      with:
+        step: finish
+        token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
+        status: ${{ steps.deploy.status }}
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
