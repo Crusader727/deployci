@@ -24,32 +24,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
     - name: Install dependencies
       run: npm install
 
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch  
-
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v4.9
+        
     - name: Build
       run: npm run build
       id: build 
-
-    - name: Create GitHub deployment
-      uses: chrnorm/deployment-action@releases/v1
-      id: deployment
-      with:
-        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}"
-        target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
-        environment: production
 
     - name: Deploy
       uses: appleboy/scp-action@master
@@ -60,23 +44,4 @@ jobs:
         key: ${{ secrets.SERVER_KEY }}
         port: 22
         source: "build/*"
-        target: "/var/www/html/${{ steps.extract_branch.outputs.branch }}"
-
-    - name: Update deployment status (success)
-      if: success()
-      uses: chrnorm/deployment-status@releases/v1
-      with:
-        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN}}"
-        target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
-        state: "success"
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-
-    - name: Update deployment status (failure)
-      if: failure()
-      uses: chrnorm/deployment-status@releases/v1
-      with:
-        token: "${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}"
-        target_url: http://46.101.251.59/${{ steps.extract_branch.outputs.branch }}/build/
-        state: "failure"
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-      
+        target: "/var/www/html/${{ steps.branch-name.outputs.current_branch }}"
