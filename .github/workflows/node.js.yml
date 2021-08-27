@@ -61,5 +61,6 @@ jobs:
       with:
         step: finish
         token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-        status: ${{ steps.deploy.status }}
+        status: ${{ job.status }}
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+        env_url: "http://${{ secrets.SERVER_HOST }}/${{ steps.branch-name.outputs.current_branch }}/build"
