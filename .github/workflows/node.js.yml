@@ -35,14 +35,6 @@ jobs:
       run: npm run build
       id: build 
 
-    - name: start deployment
-      uses: bobheadxi/deployments@v0.4.3
-      id: deployment
-      with:
-        step: start
-        token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-        env: release
-
     - name: Deploy
       uses: appleboy/scp-action@master
       id: deploy
@@ -55,12 +47,18 @@ jobs:
         source: "build/*"
         target: "/var/www/html/${{ steps.branch-name.outputs.current_branch }}"
 
-    - name: update deployment status
-      uses: bobheadxi/deployments@v0.4.3
-      if: always()
+    - name: Comment
+      if: success()
+      uses: marocchino/sticky-pull-request-comment@v2
       with:
-        step: finish
-        token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-        status: ${{ job.status }}
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-        env_url: "http://${{ secrets.SERVER_HOST }}/${{ steps.branch-name.outputs.current_branch }}/build"
+        header: release
+        message: |
+          Release is done [URL](http://${{ secrets.SERVER_HOST }}/${{ steps.branch-name.outputs.current_branch }}/build) 🟢🟢🟢
+
+    - name: Comment
+      if: failure()
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        header: release
+        message: |
+          Something went wrong with release ❌❌❌
