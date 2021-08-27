@@ -2,7 +2,7 @@
     "name": "test",
     "version": "0.1.0",
     "private": true,
-    "homepage": "https://crusader727.github.io/deployci",
+    "homepage": "https://crusader727.github.io/testapp",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
