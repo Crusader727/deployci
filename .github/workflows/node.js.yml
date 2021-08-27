@@ -52,5 +52,5 @@ jobs:
         key: ${{ secrets.SERVER_KEY }}
         port: 22
         source: "build/*"
-        target: "var/www/html/${{ steps.extract_branch.outputs.branch }}"
+        target: "/var/www/html/${{ steps.extract_branch.outputs.branch }}"
       
