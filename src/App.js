@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          xuy
+          new main
         </a>
       </header>
     </div>
