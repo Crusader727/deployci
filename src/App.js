@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          test new dir awdawd
+          nn2
         </a>
       </header>
     </div>
